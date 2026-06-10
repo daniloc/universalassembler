@@ -1,0 +1,6 @@
+// One-shot verbs in this directory: deploy.ts (prod) and dev.ts (preview).
+{
+  "name": "universal-assembler",
+  "main": "worker.ts",
+  "compatibility_date": "2026-06-06"
+}

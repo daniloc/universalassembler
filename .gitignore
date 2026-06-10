@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.pnp.*
+.yarn/cache
+.yarn/install-state.gz
+.pnpm-store/
+
+# Build artifacts / TS
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment / secrets — never commit these
+.env
+.env.local
+.env.*.local
+.dev.vars
+.dev.vars.*
+
+# IDE / OS junk (keep .vscode/ and .zed/ as committed project config)
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Cache / coverage
+.cache/
+.parcel-cache/
+.turbo/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+coverage/
+.nyc_output/
+
+# Test runner caches
+.vitest/
+.jest-cache/
+
+# CloudFlare Workers / wrangler
+.wrangler/
+.miniflare/
+worker-configuration.d.ts
+
+# UniversalAssembler — generated artifacts
+system/subassemblies/Hosting/system/library/tree.json

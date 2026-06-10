@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "universal-assembler": {
+      "command": "node",
+      "args": ["system/subassemblies/MCPServer/system/library/start.ts"]
+    }
+  }
+}

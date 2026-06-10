@@ -1,0 +1,43 @@
+#!/bin/sh
+# UA pre-commit hook — close the feedback loop at the git boundary.
+#
+# Runs `node system/library/bootstrap.ts` and refuses the commit if
+# verification fails. Without this hook, drift accumulates silently between
+# manual bootstrap runs; with it, every committed snapshot is a verified one.
+#
+# Installed automatically by `init.ts` for fresh projects, and by
+# `node system/library/hooks/install.ts` for projects that vendored UA before
+# the hooks shipped (or projects that ran `git init` after seeding).
+#
+# To bypass for a single emergency commit: `git commit --no-verify`.
+# Treat it as a controlled override; the next commit should fix what broke.
+
+set -e
+
+ROOT=$(git rev-parse --show-toplevel)
+BOOTSTRAP="$ROOT/system/library/bootstrap.ts"
+
+if [ ! -f "$BOOTSTRAP" ]; then
+  # No UA scaffolding here — silently allow. The hook is harmless when
+  # vendored into a non-UA project (e.g. a submodule).
+  exit 0
+fi
+
+# Clear git's hook-context environment before spawning bootstrap. Without
+# this, GIT_INDEX_FILE / GIT_DIR / GIT_WORK_TREE leak into the verifier's
+# subprocesses, and any test that does `git worktree add` or other index
+# ops gets a confused git that sees the parent commit's staged state
+# instead of the worktree it was meant to operate on. Was the root cause
+# of months of pre-commit-vs-CLI bootstrap discrepancy.
+unset GIT_INDEX_FILE GIT_DIR GIT_WORK_TREE GIT_OBJECT_DIRECTORY GIT_COMMON_DIR
+
+# Run bootstrap. Exits non-zero on verification failure (UA's existing
+# convention). Output suppressed because the hook should be invisible when
+# verification succeeds.
+if node "$BOOTSTRAP" >/dev/null 2>&1; then
+  exit 0
+fi
+
+echo "UA pre-commit: bootstrap failed. Re-run \`node system/library/bootstrap.ts\` to see what's red."
+echo "Bypass once with \`git commit --no-verify\` if you're committing the fix."
+exit 1

@@ -1,0 +1,21 @@
+{
+  "name": "universal-assembler",
+  "type": "module",
+  "private": true,
+  "description": "An antiframework for agent-driven development. A lattice that snaps growing software to its own declared motifs.",
+  "//": "CANONICAL alias map. The `imports` field below is the single source of truth for #<alias>/ subpath imports across UA. Node resolves #ua/* and #sub/* by walking up from any system/library/**.ts to this file. tsconfig.json paths and any nested package.json `imports` MUST mirror this map. drift.ts (Pass 6) flags any #<alias>/ import in library source that this map does not declare.",
+  "imports": {
+    "#ua/*": "./library/*",
+    "#sub/*": "./subassemblies/*"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "@hono/node-server": "^1.13.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "wrangler": "^4.0.0"
+  }
+}
