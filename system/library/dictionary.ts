@@ -94,6 +94,15 @@ export function parseEntry(source: string, path: string): DictEntry {
 
   if (!word) throw new Error(`${path}: no "# <Word>" heading`);
   if (!means) throw new Error(`${path}: missing required "means:" line`);
+  // The word cap — same philosophy as the is-clause (140) and README (1500):
+  // a definition that needs an essay isn't a word yet, it's an undigested
+  // pattern. The almanac's pattern.md bloat was the rot center; entries stay
+  // under the same ceiling the README lives with.
+  if (source.length >= 1500) {
+    process.stderr.write(
+      `warning: ${path} is ${source.length} chars — words read best under 1500. Trim to the essential contract.\n`,
+    );
+  }
   return { word, means, here, claims: sections.claims, not: sections.not, traps: sections.traps, path };
 }
 

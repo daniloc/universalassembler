@@ -33,6 +33,7 @@ function print(result: VerifyResult, prefix: string, isRoot: boolean, isLast: bo
   return totals;
 }
 
+const __verifyStart = Date.now();
 const root = await walk(process.cwd());
 console.log("");
 const result = await verifyTree(root, { root });
@@ -74,9 +75,12 @@ console.log(`\n${totals.pass} pass, ${totals.fail} fail, ${totals.unverified} un
 
   const open = await openDebt(projectRoot);
   const claims = totals.pass + totals.fail + totals.unverified;
+  // Duration is part of the gauge: a slow path trains bypass exactly like
+  // a false-red path. Visible seconds keep claim-cost honest.
+  const secs = ((Date.now() - __verifyStart) / 1000).toFixed(1);
   console.log(
     `metabolism: ${claims} claims, ${totals.pass} green, ${totals.fail} red, ` +
-    `${totals.unverified} unverified, ${open.length} debt`,
+    `${totals.unverified} unverified, ${open.length} debt (${secs}s)`,
   );
 }
 

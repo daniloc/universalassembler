@@ -121,6 +121,18 @@ export async function growthGate(projectRoot: string, opts: { force?: boolean; a
 
   if (reasons.length === 0) return { allowed: true, reasons };
   if (opts.force) {
+    // The forcing ceiling: you may borrow against the frontier, but you may
+    // not compound it. Three open debts means the loan window is closed —
+    // clear debt before forcing more growth. (The ass process was rebuilt
+    // one loud bypass at a time; this is the hard stop.)
+    const open = await openDebt(projectRoot);
+    if (open.length >= 3) {
+      process.stderr.write(
+        `growth gate: --force REFUSED — ${open.length} debts already open.\n` +
+        `The ceiling is 3. Clear debt first: node system/library/debt.ts list\n`,
+      );
+      return { allowed: false, reasons: [...reasons, `forcing ceiling: ${open.length} open debts`] };
+    }
     await recordDebt(projectRoot, "forced-growth", `${opts.action} forced while: ${reasons.join(" | ")}`);
     process.stderr.write(
       `growth gate BYPASSED (--force) — forced-growth debt recorded:\n` +

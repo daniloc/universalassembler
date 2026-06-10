@@ -713,6 +713,15 @@ const STRUCTURAL_FLOOR = ["declared outputs are present"];
  * is injected ahead of declared claims.
  */
 export async function verifyTree(node: SpecNode, ctx: Ctx, primitivesList?: Primitive[]): Promise<VerifyResult> {
+  // Membrane-width gauge: a contract a human can't read at a glance is a
+  // decomposition smell — the capsule wants splitting, or its claims belong
+  // to children. Warn, never block (false friction trains bypass).
+  const claimCount = (node.spec.worksWhen ?? []).length;
+  if (claimCount > 12) {
+    process.stderr.write(
+      `warning: ${node.spec.name} carries ${claimCount} claims — membranes read best under 12. Consider decomposing.\n`,
+    );
+  }
   const signals = await evaluateSpec(node, ctx, primitivesList);
   if (node === ctx.root) {
     const declared = new Set(node.spec.worksWhen.map(p => p.replace(/\s+/g, " ").trim()));
