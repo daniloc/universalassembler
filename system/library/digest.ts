@@ -110,6 +110,15 @@ async function main(): Promise<number> {
     for (const e of debtOpen.slice(0, 5)) attention.push(`DEBT: [${e.kind}] ${e.detail.slice(0, 140)} (since ${e.ts.slice(0, 10)})`);
     const drift = await collectDrift(projectRoot);
     if (driftTotal(drift) > 0) attention.push(`DRIFT: ${driftTotal(drift)} finding(s) — node system/library/drift.ts`);
+    // Green is not blessed: surface what awaits the human.
+    const { acceptanceStatus } = await import("./accept.ts");
+    const acc = await acceptanceStatus(projectRoot, root);
+    const stale = acc.filter(a => a.state === "stale");
+    const unaccepted = acc.filter(a => a.state === "unaccepted");
+    for (const a of stale.slice(0, 3)) attention.push(`STALE ACCEPTANCE: ${a.node} — membrane changed since blessed (${a.acceptedAt?.slice(0, 10)})`);
+    if (unaccepted.length > 0 && t.fail === 0) {
+      attention.push(`AWAITING ACCEPTANCE: ${unaccepted.length} green node(s) never blessed — node system/library/accept.ts list`);
+    }
   } catch (e) {
     frontier = `frontier: (no spec tree: ${(e as Error).message})`;
   }

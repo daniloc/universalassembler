@@ -53,6 +53,7 @@ spec UniversalAssembler {
     dictionary: "browse the project glossary (node system/library/dictionary.ts list|show <Word>)"
     debt:       "the governor's ledger — open bypasses and unverifiable claims (node system/library/debt.ts list)"
     digest:     "human-metabolism change summary since the last mark (node system/library/digest.ts [--since <ref>])"
+    accept:     "HUMAN attestation that a green node's claims are the right claims (node system/library/accept.ts <Node>)"
     test:       "run unit tests via node:test for the UA core library"
     upgrade:    "pull canonical UA core into this project (dry-run by default, --apply to commit)"
     drift:      "report gap between spec catalogue and source tree (usage: node system/library/drift.ts [--at <root>] [--json])"

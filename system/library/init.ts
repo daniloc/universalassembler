@@ -328,6 +328,7 @@ const CORE_FILES = [
   "next.ts",       // the single-action path command
   "debt.ts",       // the governor's ledger + growth gate
   "digest.ts",     // the human-metabolism change summary
+  "accept.ts",     // the human attestation layer — green is not blessed
 ];
 
 async function copyTree(src: string, dst: string): Promise<void> {

@@ -82,6 +82,16 @@ console.log(`\n${totals.pass} pass, ${totals.fail} fail, ${totals.unverified} un
     `metabolism: ${claims} claims, ${totals.pass} green, ${totals.fail} red, ` +
     `${totals.unverified} unverified, ${open.length} debt (${secs}s)`,
   );
+
+  // The social track beside the mechanical one: green is not blessed.
+  const { acceptanceStatus } = await import("./accept.ts");
+  const acc = await acceptanceStatus(projectRoot, root);
+  const accepted = acc.filter(a => a.state === "accepted").length;
+  const stale = acc.filter(a => a.state === "stale").length;
+  console.log(
+    `acceptance: ${accepted}/${acc.length} nodes accepted` +
+    (stale ? `, ${stale} stale (membrane changed since blessing)` : ""),
+  );
 }
 
 if (totals.fail > 0) process.exit(1);

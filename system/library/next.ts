@@ -234,15 +234,25 @@ async function recommend(projectRoot: string): Promise<Recommendation> {
     const pkg = JSON.parse(await readFile(join(projectRoot, "package.json"), "utf8")) as { scripts?: Record<string, string> };
     hasTestScript = !!pkg.scripts?.test;
   } catch { /* no package.json */ }
+  // Acceptance is surfaced, never recommended as an agent action: blessing
+  // is the human's move. (An agent accepting its own work is the failure
+  // this layer exists to prevent.)
+  let acceptanceNote = "";
+  try {
+    const { acceptanceStatus } = await import("./accept.ts");
+    const acc = await acceptanceStatus(projectRoot, root);
+    const awaiting = acc.filter(a => a.state !== "accepted").length;
+    if (awaiting > 0) acceptanceNote = ` ${awaiting} node(s) await HUMAN acceptance (accept.ts list) — surface this; do not self-accept.`;
+  } catch { /* acceptance optional */ }
   return hasTestScript
     ? {
         command: `npm test`,
-        why: "spec verified, all subassembly bodies look implemented, ledger clear. Run your tests, commit, then `node system/library/digest.ts` for the human-readable wrap-up.",
+        why: "spec verified, all subassembly bodies look implemented, ledger clear. Run your tests, commit, then `node system/library/digest.ts` for the human-readable wrap-up." + acceptanceNote,
         category: "ship",
       }
     : {
         command: `node system/library/digest.ts`,
-        why: "spec verified, ledger clear. Grow the frontier (node system/library/new.ts --bare <Name> for a fresh subassembly, or from a dictionary word), or wrap up with the digest.",
+        why: "spec verified, ledger clear. Grow the frontier (node system/library/new.ts --bare <Name> for a fresh subassembly, or from a dictionary word), or wrap up with the digest." + acceptanceNote,
         category: "ship",
       };
 }
